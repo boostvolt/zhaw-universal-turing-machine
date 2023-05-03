@@ -3,12 +3,61 @@
  */
 package ch.zhaw.prog2.tooling;
 
+import java.util.Arrays;
+
+/**
+ * Code of TM for multiplication
+ * <p>
+ * 1010100010001001101000100000000000100010110001010001010011000100010000100010011000000000001000100
+ * 0000000001000100110000000000010100000000000010001001100001010000010001001100001000100000000010001
+ * 0110000010001000000100010011000001010000010100110000001000100000001010110000001010000001010011000
+ * 0000100010000000010001011000000010100000001010110000000010001000010100110000000010100000000101011
+ * 0000000001000100000000001000101100000000010100000000010101100000000001000101000100110000000000101
+ * 00000000001010110000000000001000100100010011000000000000101000000000000100010011100_000
+ */
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Two arguments must be passed");
+        }
+        final String binaryString = args[0];
+        final boolean stepMode = args[1].equals("1");
+        final String[] transitionsAndInputSplit = binaryString.split("111");
+        if (transitionsAndInputSplit.length != 2) {
+            throw new IllegalArgumentException("Not correctly coded TM with input");
+        }
+        final String input = transitionsAndInputSplit[1];
+        final String[] transitions = transitionsAndInputSplit[0].split("11");
+
+        final TuringMachine turingMachine = new TuringMachine(input, stepMode);
+        Arrays.stream(transitions)
+            .forEach(transition -> turingMachine.addTransition(parseTransition(transition)));
+        turingMachine.startCalculation();
     }
+
+    private static Transition parseTransition(String transition) {
+        transition = stripLeadingOne(transition);
+
+        final String[] fiverTuple = transition.split("1");
+        if (fiverTuple.length != 5) {
+            throw new IllegalArgumentException("Not correctly coded TM");
+        }
+
+        final State currentState = new State(fiverTuple[0]);
+        final Symbol readSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[1])
+            .orElseThrow(() -> new IllegalArgumentException("Read Symbol not encoded correctly"));
+        final State nextState = new State(fiverTuple[2]);
+        final Symbol writeSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[3])
+            .orElseThrow(() -> new IllegalArgumentException("Write Symbol not encoded correctly"));
+        final Direction direction = Direction.getDirectionForBinaryCode(fiverTuple[4])
+            .orElseThrow(() -> new IllegalArgumentException("Direction not encoded correctly"));
+        return new Transition(currentState, readSymbol, nextState, writeSymbol, direction);
+    }
+
+    private static String stripLeadingOne(final String transition) {
+        return transition.startsWith("1") ? transition.substring(1) : transition;
+    }
+
 }
