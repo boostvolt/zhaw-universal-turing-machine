@@ -88,8 +88,10 @@ public class TuringMachine {
     }
 
     private void initializeTape(final String input) {
-        range(0, input.length())
-            .forEach(i -> tape.add(String.valueOf(input.charAt(i))));
+        if (input != null) {
+            range(0, input.length())
+                    .forEach(i -> tape.add(String.valueOf(input.charAt(i))));
+        }
     }
 
     private String getSymbolAtIndex(final int index) {
