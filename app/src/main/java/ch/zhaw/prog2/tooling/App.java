@@ -12,51 +12,50 @@ import java.util.Arrays;
  * 0001000000100010011000001010000010100110000001000100000001010110000001010000001010011000000010001
  * 0000000010001011000000010100000001010110000000010001000010100110000000010100000000101011000000000
  * 1000100000000001000101100000000010100000000010101100000000001000101000100110000000000101000000000
- * 01010"
- * "1"
+ * 01010" "1"
  */
 public class App {
 
-  public static void main(String[] args) {
-    if (args.length != 2) {
-      throw new IllegalArgumentException("Two arguments must be passed");
-    }
-    final String binaryString = args[0];
-    final boolean stepMode = args[1].equals("1");
-    final String[] transitionsAndInputSplit = binaryString.split("111");
-    String input = null;
-    if (transitionsAndInputSplit.length == 2) {
-      input = transitionsAndInputSplit[1];
-    }
-    final String[] transitions = transitionsAndInputSplit[0].split("11");
+    public static void main(String[] args) {
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Two arguments must be passed");
+        }
+        final String binaryString = args[0];
+        final boolean stepMode = args[1].equals("1");
+        final String[] transitionsAndInputSplit = binaryString.split("111");
+        String input = null;
+        if (transitionsAndInputSplit.length == 2) {
+            input = transitionsAndInputSplit[1];
+        }
+        final String[] transitions = transitionsAndInputSplit[0].split("11");
 
-    final TuringMachine turingMachine = new TuringMachine(input, stepMode);
-    Arrays.stream(transitions)
-        .forEach(transition -> turingMachine.addTransition(parseTransition(transition)));
-    turingMachine.startCalculation();
-  }
-
-  private static Transition parseTransition(String transition) {
-    transition = stripLeadingOne(transition);
-
-    final String[] fiverTuple = transition.split("1");
-    if (fiverTuple.length != 5) {
-      throw new IllegalArgumentException("Not correctly coded TM");
+        final TuringMachine turingMachine = new TuringMachine(input, stepMode);
+        Arrays.stream(transitions)
+            .forEach(transition -> turingMachine.addTransition(parseTransition(transition)));
+        turingMachine.startCalculation();
     }
 
-    final State currentState = new State(fiverTuple[0]);
-    final Symbol readSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[1])
-        .orElseThrow(() -> new IllegalArgumentException("Read Symbol not encoded correctly"));
-    final State nextState = new State(fiverTuple[2]);
-    final Symbol writeSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[3])
-        .orElseThrow(() -> new IllegalArgumentException("Write Symbol not encoded correctly"));
-    final Direction direction = Direction.getDirectionForBinaryCode(fiverTuple[4])
-        .orElseThrow(() -> new IllegalArgumentException("Direction not encoded correctly"));
-    return new Transition(currentState, readSymbol, nextState, writeSymbol, direction);
-  }
+    private static Transition parseTransition(String transition) {
+        transition = stripLeadingOne(transition);
 
-  private static String stripLeadingOne(final String transition) {
-    return transition.startsWith("1") ? transition.substring(1) : transition;
-  }
+        final String[] fiverTuple = transition.split("1");
+        if (fiverTuple.length != 5) {
+            throw new IllegalArgumentException("Not correctly coded TM");
+        }
+
+        final State currentState = new State(fiverTuple[0]);
+        final Symbol readSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[1])
+            .orElseThrow(() -> new IllegalArgumentException("Read Symbol not encoded correctly"));
+        final State nextState = new State(fiverTuple[2]);
+        final Symbol writeSymbol = Symbol.getSymbolForBinaryCode(fiverTuple[3])
+            .orElseThrow(() -> new IllegalArgumentException("Write Symbol not encoded correctly"));
+        final Direction direction = Direction.getDirectionForBinaryCode(fiverTuple[4])
+            .orElseThrow(() -> new IllegalArgumentException("Direction not encoded correctly"));
+        return new Transition(currentState, readSymbol, nextState, writeSymbol, direction);
+    }
+
+    private static String stripLeadingOne(final String transition) {
+        return transition.startsWith("1") ? transition.substring(1) : transition;
+    }
 
 }

@@ -90,7 +90,7 @@ public class TuringMachine {
     private void initializeTape(final String input) {
         if (input != null) {
             range(0, input.length())
-                    .forEach(i -> tape.add(String.valueOf(input.charAt(i))));
+                .forEach(i -> tape.add(String.valueOf(input.charAt(i))));
         }
     }
 
